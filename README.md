@@ -10,7 +10,7 @@ BSR-seq属于BSA分析方法中的一种，只不过是使用转录组测序的�
 ![image](https://github.com/LiuBinhahaha/Figs/blob/main/BSR_pipeline/SNP_distribution_histogram_WSL6.png)
 
 ## 3. ED plot
-![image](https://github.com/LiuBinhahaha/Figs/blob/main/BSR_pipeline/BSR_ED.png)
+![image](https://github.com/LiuBinhahaha/Figs/blob/main/BSR_pipeline/SWL6_ED_00.png)
 
 ## 4. ED<sup>4</sup> plot
-![image](https://github.com/LiuBinhahaha/Figs/blob/main/BSR_pipeline/BSR_ED4.png)
+![image](https://github.com/LiuBinhahaha/Figs/blob/main/BSR_pipeline/SWL6_ED4_00.png)
