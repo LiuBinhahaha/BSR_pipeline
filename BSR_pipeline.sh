@@ -136,9 +136,3 @@ gatk SelectVariants \
      -select-type INDEL \
      -V ${work_dir}/${filename}.filter.vcf \
      -O ${work_dir}/${filename}.filter.INDELs.vcf
-
-
-# 过滤
-# 去除缺失位点(./.)的行; 去除野生和突变同时包含(1/1)的行，1/1.*1/1表示去除同时包含两个1/1的行，他们之间可以有任何字符，包含零个字符; 将#CHROM替换为CHROM.
-grep -v "##" ${work_dir}/${filename}.filter.SNPs.vcf | grep -v "\./\." | grep -v "1/1.*1/1" | sed 's/^#CHROM/CHROM/' > ${work_dir}/${filename}.filter.SNPs.txt
-
