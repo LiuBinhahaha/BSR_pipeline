@@ -24,4 +24,4 @@ BSR-seq属于BSA分析方法中的一种，只不过是使用转录组测序的�
 ![image](https://github.com/LiuBinhahaha/Figs/blob/main/BSR_pipeline/SWL6_mut_index_00.png)
 
 ## 7. ΔSNP-index plot
-![[image](https://github.com/LiuBinhahaha/Figs/blob/main/BSR_pipeline/SWL6_delta_SNP-index_00.png)
+![image](https://github.com/LiuBinhahaha/Figs/blob/main/BSR_pipeline/SWL6_delta_SNP-index_00.png)
