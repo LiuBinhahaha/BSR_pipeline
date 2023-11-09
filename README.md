@@ -6,7 +6,7 @@ BSR-seq属于BSA分析方法中的一种，只不过是使用转录组测序的�
 
 # 结果：
 ## 1. Depth_density
-![image](https://github.com/LiuBinhahaha/Figs/blob/main/BSR_pipeline/depth_desity.png)
+![image](https://github.com/LiuBinhahaha/Figs/raw/BSR_pipeline/depth_desity.png)
 
 ## 2. 查看SNP的分布
 ![image](https://github.com/LiuBinhahaha/Figs/blob/main/BSR_pipeline/SNP_distribution_histogram_WSL6.png)
