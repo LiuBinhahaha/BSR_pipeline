@@ -6,23 +6,23 @@ library(RColorBrewer)
 #library(devtools)
 #install_github('tavareshugo/windowscanr')
 library(windowscanr)
-# 注：脚本中的WT和mut是两个样本的名字
+# 注：脚本中的WT和mut是两个样本的名字,vcf文件中的
 
 setwd("/data/heqiang/labmember/Zhengjun/SWL6/test")
-input <- "./SWL6_snpeff.filter.SNPs.txt"
+input <- "SWL6_snpeff.filter.SNPs.txt"
 df <- read_tsv(input)
 chromColor <- read_tsv("chromColor.txt")
 
 dd <- df %>% filter(QUAL > 300) # 过滤掉QUAL小于300的位点
 
-# 过滤去除Indel
+# 过滤去除Indel,亦可在vcf过滤的时候去除Indel
 len_ref <- nchar(dd$REF) # nchar的参数是一个字符向量，返回对应位置上字符串的长度
 len_alt <- nchar(dd$ALT)
 type <- len_ref == 1 & len_alt == 1
 dd <- dd[type, ]
 
 # 提取WT的基因型及其ref和alt的reads覆盖度
-wt <- dd %>% select("WT") %>% separate(WT, c("WT.geno", "WT.depth"), sep=":") %>% separate(WT.depth, c("WT.ref.depth", "WT.alt.depth"), sep=",", convert = T)
+wt <- dd %>% select("WT") %>% separate(WT, c("WT.geno", "WT.depth"), sep=":") %>% separate(WT.depth, c("WT.ref.depth", "WT.alt.depth"), sep=",", convert = T)  # convert表示自动识别数据类别，是数字还是字符
 
 # 提取mut的基因型及其ref和alt的reads覆盖度
 mut <- dd %>% select("mut") %>% separate(mut, c("mut.geno", "mut.depth"), sep=":") %>% separate(mut.depth, c("mut.ref.depth", "mut.alt.depth"), sep=",", convert = T)
@@ -45,10 +45,10 @@ raw <- raw %>% filter(WT.sum >10, mut.sum > 10)
 
 # 每个chrom的SNP数目
 SNPnumber <- raw %>% group_by(CHROM) %>% count()
+write_tsv(file="SNP_number_per_chr.txt", x=SNPnumber)
 
 
 options(scipen = 200) # 在 R 中，默认情况下，当浮点数的小数部分为零时，它们将以科学计数法的形式显示。scipen 的默认值是 0，这意味着浮点数小数部分为零时将采用科学计数法。例如，0.0001 将显示为 1e-04，如果将 scipen 设置为较大的值，比如 200，那么 R 将更不容易采用科学计数法显示浮点数，即使小数部分为零，也会以普通的小数形式显示。
-
 
 # SNP的染色体分布图
 P1 <- chromColor %>% left_join(raw, by = "CHROM") %>% ggplot(aes(x=POS))+
@@ -73,6 +73,7 @@ raw <- raw %>% mutate(WT.ref.rate = WT.ref.depth/WT.sum,
                                               ED4 = ED^4)
 
 # 计算SNP-index
+# 公式：SNP-index = alt.depth/(ref.depth + alt.depth)
 raw <- raw %>% mutate(WT.index = WT.alt.depth/(WT.ref.depth + WT.alt.depth),
                                               mut.index = mut.alt.depth/(mut.ref.depth + mut.alt.depth),
                                               delta.index = WT.index - mut.index)
@@ -93,13 +94,13 @@ write_tsv(file = "BSR_ED_index.txt", x = slid_win)
 #cols =rep(c('#467aaa','#38539c'),10)
 #chromColor['COLOR'] = cols[1:nrow(chromColor)]  # 将前面设定的颜色替换
 
-raw <- chromColor %>% left_join(raw, by = "CHROM")
+raw <- chromColor %>% left_join(raw, by = "CHROM")  # left_join 操作将在 "CHROM" 列上匹配两个数据框，并将匹配的行合并到一个新的数据框 d 中。连接两个数据框
 
-
+# quantile分位数功能，首先按升序排列输入值，然后将数据分为相等的两半，其中中位数为中间，其余部分的下半部分为下四分位数，而上半部分为上四分位数。
 # 设定阈值筛选高可信窗口
-# method_1 ED&ED4
+# method_1 ED&ED^4
 # ED
-EDh1 =  quantile(na.omit(filter$ED),probs=seq(0,1,0.01))['99%']
+EDh1 =  quantile(na.omit(filter$ED),probs=seq(0,1,0.01))['99%']  # probs参数指定了希望计算的分位数的概率，计算从0%到100%的分位数，以每1%的间隔计算。也就是说，它将计算0%，1%，2%，...，99%，100%这些分位数的值，通过 ['99%'] 来从计算得到的分位数结果中选择99%分位数的值。这表示选择在所有数据中占前99%的位置的值，也就是百分之九十九的分位数值。
 EDh2 =  quantile(na.omit(filter$ED),probs=seq(0,1,0.01))['95%']
 
 EDh1_filter_data <- filter %>% filter(ED >= EDh1)
@@ -199,6 +200,7 @@ P2 = P1+geom_line(data=filter(filter, SNP_num > 10),aes(x = win_mid, y = WT_inde
 P3 = P2+geom_hline(yintercept =WT_index1, linetype = "dotdash", color ="red", size = 0.7)+geom_hline(yintercept =WT_index2, linetype = "solid", color ='grey', size = 0.7)
 P3
 ggsave(P3, filename = "SWL6_WT_index.pdf", width = 15, height = 5)
+
 
 # 4. mut SNP-index plot
 P1 <- ggplot(na.omit(raw), aes(x = POS, y = mut.index)) +
