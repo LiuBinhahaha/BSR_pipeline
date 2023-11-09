@@ -8,8 +8,8 @@ library(RColorBrewer)
 library(windowscanr)
 # 注：脚本中的WT和mut是两个样本的名字
 
-setwd("/data/heqiang/labmember/Zhengjun/SWL7/test")
-input <- "SWL7_snpeff.filter.SNPs.txt"
+setwd("/data/heqiang/labmember/Zhengjun/SWL6/test")
+input <- "./SWL6_snpeff.filter.SNPs.txt"
 df <- read_tsv(input)
 chromColor <- read_tsv("chromColor.txt")
 
@@ -164,7 +164,7 @@ P2 = P1+geom_line(data=filter(filter, SNP_num > 10),aes(x = win_mid, y = ED, gro
 #添加阈值线
 P3 = P2+geom_hline(yintercept =EDh1, linetype = "dotdash", color ="red", size = 0.7)+geom_hline(yintercept =EDh2, linetype = "solid", color ='grey', size = 0.7)
 P3
-ggsave(P3, filename = "SWL7_ED.pdf", width = 15, height = 4)
+ggsave(P3, filename = "SWL6_ED.pdf", width = 15, height = 4)
 
 
 #2.ED4点图同样利用所有信息绘制
@@ -181,7 +181,7 @@ P2 = P1+geom_line(data=filter(filter, SNP_num > 10),aes(x = win_mid, y = ED4, gr
 #添加阈值线
 P3 = P2+geom_hline(yintercept =ED4h1, linetype = "dotdash", color ="red", size = 0.7)+geom_hline(yintercept =ED4h2, linetype = "solid", color ='grey', size = 0.7)
 P3
-ggsave(P3, filename = "SWL7_ED4.pdf", width = 15, height = 5)
+ggsave(P3, filename = "SWL6_ED4.pdf", width = 15, height = 5)
 
 
 # 3. WT SNP-index plot
@@ -198,7 +198,7 @@ P2 = P1+geom_line(data=filter(filter, SNP_num > 10),aes(x = win_mid, y = WT_inde
 #添加阈值线
 P3 = P2+geom_hline(yintercept =WT_index1, linetype = "dotdash", color ="red", size = 0.7)+geom_hline(yintercept =WT_index2, linetype = "solid", color ='grey', size = 0.7)
 P3
-ggsave(P3, filename = "SWL7_WT_index.pdf", width = 15, height = 5)
+ggsave(P3, filename = "SWL6_WT_index.pdf", width = 15, height = 5)
 
 # 4. mut SNP-index plot
 P1 <- ggplot(na.omit(raw), aes(x = POS, y = mut.index)) +
@@ -214,7 +214,7 @@ P2 = P1+geom_line(data=filter(filter, SNP_num > 10),aes(x = win_mid, y = mut_ind
 #添加阈值线
 P3 = P2+geom_hline(yintercept =mut_index1, linetype = "dotdash", color ="red", size = 0.7)+geom_hline(yintercept =mut_index2, linetype = "solid", color ='grey', size = 0.7)
 P3
-ggsave(P3, filename = "SWL7_mut_index.pdf", width = 15, height = 4)
+ggsave(P3, filename = "SWL6_mut_index.pdf", width = 15, height = 4)
 
 
 # 5 delta SNP-index plot
@@ -231,4 +231,4 @@ P2 = P1+geom_line(data=filter(filter, SNP_num > 10),aes(x = win_mid, y = delta_i
 #添加阈值线
 P3 = P2+geom_hline(yintercept =delta_index1, linetype = "dotdash", color ="red", size = 0.7)+geom_hline(yintercept =delta_index2, linetype = "solid", color ='grey', size = 0.7)
 P3
-ggsave(P3, filename = "SWL7_delta_SNP-index.pdf", width = 15, height = 4)
+ggsave(P3, filename = "SWL6_delta_SNP-index.pdf", width = 15, height = 4)
