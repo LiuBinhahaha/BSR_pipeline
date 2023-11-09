@@ -90,8 +90,8 @@ filter <- slid_win %>% select(CHROM, win_start, win_end, win_mid, ED = ED_mean, 
 write_tsv(file = "BSR_ED_index.txt", x = slid_win)
 
 # 添加颜色，10条染色体交替显示两种颜色
-cols =rep(c('#467aaa','#38539c'),10)
-chromColor['COLOR'] = cols[1:nrow(chromColor)]  # 将前面设定的颜色替换
+#cols =rep(c('#467aaa','#38539c'),10)
+#chromColor['COLOR'] = cols[1:nrow(chromColor)]  # 将前面设定的颜色替换
 
 raw <- chromColor %>% left_join(raw, by = "CHROM")
 
@@ -115,7 +115,7 @@ ED4h2 =  quantile(na.omit(filter$ED4),probs=seq(0,1,0.01))['95%']
 ED4h1_filter_data <- filter %>% filter(ED4 >= ED4h1)
 write_tsv(file="ED4_99_filter.txt", x=ED4h1_filter_data)
 
-ED4h2_filter_data <- filter %>% filter(ED4>=ED4h2)
+ED4h2_filter_data <- filter %>% filter(ED4 >= ED4h2)
 write_tsv(file="ED4_95_filter.txt", x=ED4h2_filter_data)
 
 
@@ -123,20 +123,29 @@ write_tsv(file="ED4_95_filter.txt", x=ED4h2_filter_data)
 WT_index1 = quantile(na.omit(filter$WT_index), probs = seq(0,1,0.01))['99%']
 WT_index2 = quantile(na.omit(filter$WT_index), probs = seq(0,1,0.01))['95%']
 
-WT_index_filter_data <- filter %>% filter(WT_index >= WT_index1)
-write_tsv(file="WT_index_99_filter.txt", x=WT_index_filter_data)
+WT_index1_filter_data <- filter %>% filter(WT_index >= WT_index1)
+write_tsv(file="WT_index_99_filter.txt", x=WT_index1_filter_data)
+
+WT_index2_filter_data <- filter %>% filter(WT_index >= WT_index2)
+write_tsv(file="WT_index_95_filter.txt", x=WT_index2_filter_data)
 
 mut_index1 = quantile(na.omit(filter$mut_index), probs = seq(0,1,0.01))['99%']
 mut_index2 = quantile(na.omit(filter$mut_index), probs = seq(0,1,0.01))['95%']
 
-mut_index_filter_data <- filter %>% filter(mut_index >= mut_index1)
-write_tsv(file="mut_index_99_filter.txt", x=mut_index_filter_data)
+mut_index1_filter_data <- filter %>% filter(mut_index >= mut_index1)
+write_tsv(file="mut_index_99_filter.txt", x=mut_index1_filter_data)
+
+mut_index2_filter_data <- filter %>% filter(mut_index >= mut_index2)
+write_tsv(file="mut_index_95_filter.txt", x=mut_index2_filter_data)
 
 delta_index1 = quantile(na.omit(filter$delta_index), probs = seq(0,1,0.01))['99%']
 delta_index2 = quantile(na.omit(filter$delta_index), probs = seq(0,1,0.01))['95%']
 
-delta_index_filter_data <- filter %>% filter(delta_index >= delta_index1)
-write_tsv(file="delta_index_99_filter.txt", x=delta_index_filter_data)
+delta_index1_filter_data <- filter %>% filter(delta_index >= delta_index1)
+write_tsv(file="delta_index_99_filter.txt", x=delta_index1_filter_data)
+
+delta_index2_filter_data <- filter %>% filter(delta_index >= delta_index2)
+write_tsv(file="delta_index_95_filter.txt", x=delta_index2_filter_data)
 
 
 filter = chromColor %>% left_join(filter, by = "CHROM")
@@ -189,7 +198,7 @@ P2 = P1+geom_line(data=filter(filter, SNP_num > 10),aes(x = win_mid, y = WT_inde
 #添加阈值线
 P3 = P2+geom_hline(yintercept =WT_index1, linetype = "dotdash", color ="red", size = 0.7)+geom_hline(yintercept =WT_index2, linetype = "solid", color ='grey', size = 0.7)
 P3
-
+ggsave(P3, filename = "SWL7_WT_index.pdf", width = 15, height = 5)
 
 # 4. mut SNP-index plot
 P1 <- ggplot(na.omit(raw), aes(x = POS, y = mut.index)) +
@@ -205,7 +214,7 @@ P2 = P1+geom_line(data=filter(filter, SNP_num > 10),aes(x = win_mid, y = mut_ind
 #添加阈值线
 P3 = P2+geom_hline(yintercept =mut_index1, linetype = "dotdash", color ="red", size = 0.7)+geom_hline(yintercept =mut_index2, linetype = "solid", color ='grey', size = 0.7)
 P3
-ggsave(P3, filename = "mut_index.pdf", width = 15, height = 4)
+ggsave(P3, filename = "SWL7_mut_index.pdf", width = 15, height = 4)
 
 
 # 5 delta SNP-index plot
@@ -222,4 +231,4 @@ P2 = P1+geom_line(data=filter(filter, SNP_num > 10),aes(x = win_mid, y = delta_i
 #添加阈值线
 P3 = P2+geom_hline(yintercept =delta_index1, linetype = "dotdash", color ="red", size = 0.7)+geom_hline(yintercept =delta_index2, linetype = "solid", color ='grey', size = 0.7)
 P3
-ggsave(P3, filename = "delta_SNP-index.pdf", width = 15, height = 4)
+ggsave(P3, filename = "SWL7_delta_SNP-index.pdf", width = 15, height = 4)
