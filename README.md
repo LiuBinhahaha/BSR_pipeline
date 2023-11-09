@@ -5,7 +5,7 @@ BSR-seq是将BSA与RNA-seq结合起来的分析方法，与重测序BSA不同的
 ED公式：![image](https://github.com/LiuBinhahaha/Figs/blob/main/BSR_pipeline/ED1.png)
 SNP-index公式：SNP-index = Alt_count/(Ref_count + Alt_count)
 
-过滤标准：首先去掉低质量位点，然后去掉两池纯和且相同的位点和存在缺失值的位点。
+过滤标准：首先去掉低质量位点(QUAL<300)，然后去掉两池纯和且相同的位点和存在缺失值的位点。
 
 # 结果：
 ## 1. Depth_density
