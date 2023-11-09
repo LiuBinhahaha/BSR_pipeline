@@ -1,10 +1,10 @@
 # BSR_pipeline_STAR
 A pipeline of BSR-seq, without parents information
 # 原理：
-BSR-seq属于BSA分析方法中的一种，只不过是使用转录组测序的数据进行分析。在这里只有两个混池的转录组测序数据而缺少亲本数据，因此使用欧几里得距离（欧氏距离，Euclidean Distance，ED）进行分析，即：![image](https://github.com/LiuBinhahaha/Figs/blob/main/BSR_pipeline/ED.png).同时，因为没有亲本信息，在SNP位点过滤也需要注意，首先去掉低质量位点，然后去掉两池纯和且相同的位点和存在缺失值的位点。在最后画图时可以考虑使用ED4以放大信号。
-虽缺少亲本测序信息，但是也可以计算SNP-index来辅助判断目标区间。根据AD计算SNP-index，公式如下：Alt_count/(Ref_count + Alt_count)，值在0-1之间。设定一个最大和最小深度用于计算频率，太大的深度可能是同源基因或者是重复序列，太低的深度在计算的时候不太准确：min.depth = 10, max.depth = 100
-
-注：三维空间计算欧氏距离的公式：![image](https://github.com/LiuBinhahaha/Figs/blob/main/BSR_pipeline/ED2.png)
+BSR-seq是将BSA与RNA-seq结合起来的分析方法，与重测序BSA不同的是，在分离群体中选择极端性状的个体构建两个池，提取两个池的总RNA，进行转录组测序，根据混池个数和物种的基因组大小确定测序的数据量。另外，BSR还能反映混池的基因表达量信息，可以根据候选区段内相关基因的表达差异筛选候选基因。基于欧几里得距离(Euclidena distance, ED)，也称为MMAPPR，或SNP-index找到与突变基因共分离的SNP位点和区间，最后预测候选基因。ED主要用于无亲本测序信息的BSA分析，通过计算不同混池间各突变型的频率距离，采用距离差异来反映标记与目标区域的连锁强度，画图时可以考虑使用ED^4以放大信号。SNP-index来表示子代群体与亲本之间的序列差异程度，指的是在特定位点上，携带有不同于参考亲本的SNP的reads数占比对到同一位点的所有reads总数的比值。将两个极端池的SNP-index相减获得ΔSNP-index，Marker与性状关联度越强，ΔSNP-index越接近于1。
+ED公式：![image](https://github.com/LiuBinhahaha/Figs/blob/main/BSR_pipeline/ED.png)
+SNP-index公式：SNP-index = Alt_count/(Ref_count + Alt_count)
+过滤标准：首先去掉低质量位点，然后去掉两池纯和且相同的位点和存在缺失值的位点。
 
 # 结果：
 ## 1. Depth_density
