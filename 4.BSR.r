@@ -88,7 +88,7 @@ slid_win <- winScan(x = raw,
                     funs = "mean")
 
 filter <- slid_win %>% select(CHROM, win_start, win_end, win_mid, ED = ED_mean, ED4 = ED4_mean, SNP_num = ED_n, WT_index = WT.index_mean, mut_index = mut.index_mean, delta_index = delta.index_mean)  # 从滑窗后的重新提取出数据
-write_tsv(file = "BSR_ED_index.txt", x = slid_win)
+write_tsv(file = "BSR_ED_ED4_SNPindex.txt", x = slid_win)
 
 # 添加颜色，10条染色体交替显示两种颜色
 #cols =rep(c('#467aaa','#38539c'),10)
@@ -147,6 +147,15 @@ write_tsv(file="delta_index_99_filter.txt", x=delta_index1_filter_data)
 
 delta_index2_filter_data <- filter %>% filter(delta_index >= delta_index2)
 write_tsv(file="delta_index_95_filter.txt", x=delta_index2_filter_data)
+
+delta_index1_neg <- -delta_index1  # 99%
+delta_index2_neg <- -delta_index2  # 95%
+
+delta_index1_neg_filter_data <- filter %>% filter(delta_index <= delta_index1_neg)
+write_tsv(file="delta_index_99_neg_filter.txt", x=delta_index1_neg_filter_data)
+
+delta_index2_neg_filter_data <- filter %>% filter(delta_index <= delta_index2_neg)
+write_tsv(file="delta_index_95_neg_filter.txt", x=delta_index2_neg_filter_data)
 
 
 filter = chromColor %>% left_join(filter, by = "CHROM")
@@ -231,6 +240,11 @@ P1 <- ggplot(na.omit(raw), aes(x = POS, y = delta.index)) +
 #添加window的平均值的折线图
 P2 = P1+geom_line(data=filter(filter, SNP_num > 10),aes(x = win_mid, y = delta_index, group=LABEL),color = "black", size = 0.7)
 #添加阈值线
-P3 = P2+geom_hline(yintercept =delta_index1, linetype = "dotdash", color ="red", size = 0.7)+geom_hline(yintercept =delta_index2, linetype = "solid", color ='grey', size = 0.7)
+P3 = P2+geom_hline(yintercept =delta_index1, linetype = "dotdash", color ="red", size = 0.7)+
+        geom_hline(yintercept =delta_index2, linetype = "solid", color ='grey', size = 0.7)+
+        geom_hline(yintercept = 0, color= "black", size = 0.5)+
+        geom_hline(yintercept = delta_index1_neg, linetype = "dotdash", color ="red", size = 0.7)+
+        geom_hline(yintercept = delta_index2_neg, linetype = "solid", color ='grey', size = 0.7)
 P3
 ggsave(P3, filename = "SWL6_delta_SNP-index.pdf", width = 15, height = 4)
+
