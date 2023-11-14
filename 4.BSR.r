@@ -89,6 +89,7 @@ slid_win <- winScan(x = raw,
 
 filter <- slid_win %>% select(CHROM, win_start, win_end, win_mid, ED = ED_mean, ED4 = ED4_mean, SNP_num = ED_n, WT_index = WT.index_mean, mut_index = mut.index_mean, delta_index = delta.index_mean)  # 从滑窗后的重新提取出数据
 write_tsv(file = "BSR_ED_ED4_SNPindex.txt", x = slid_win)
+filter = chromColor %>% left_join(filter, by = "CHROM")
 
 # 添加颜色，10条染色体交替显示两种颜色
 #cols =rep(c('#467aaa','#38539c'),10)
@@ -157,8 +158,6 @@ write_tsv(file="delta_index_99_neg_filter.txt", x=delta_index1_neg_filter_data)
 delta_index2_neg_filter_data <- filter %>% filter(delta_index <= delta_index2_neg)
 write_tsv(file="delta_index_95_neg_filter.txt", x=delta_index2_neg_filter_data)
 
-
-filter = chromColor %>% left_join(filter, by = "CHROM")
 
 # 1.ED图(背景点用所有原始点绘制，而不是平均值)
 P1 <- ggplot(na.omit(raw), aes(x = POS, y = ED)) +
