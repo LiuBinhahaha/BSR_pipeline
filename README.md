@@ -27,4 +27,4 @@ SNP-index公式：SNP-index = Alt_count/(Ref_count + Alt_count)
 ![image](https://github.com/LiuBinhahaha/Figs/blob/main/BSR_pipeline/SWL6_mut_index.png)
 
 ## 7. ΔSNP-index plot
-![image](https://github.com/LiuBinhahaha/Figs/blob/main/BSR_pipeline/SWL6_delta_SNP-index.png)
+![image](https://github.com/LiuBinhahaha/Figs/blob/main/BSR_pipeline/SWL6_delta_index.png)
