@@ -82,7 +82,7 @@ do
          --VALIDATION_STRINGENCY SILENT \
          -M ${workdir}/${i}_dedup.metrics
 
-    # MAPQ同步和reads剪切
+    # MAPQ同步和reads剪切，这一步是RNA-seq特异性的一步。因为mRNA转录本是主要由DNA的外显子exon可变剪切组合而成
     gatk SplitNCigarReads \
          -R ${genome} \
          -I ${workdir}/${i}_dedup.bam \
