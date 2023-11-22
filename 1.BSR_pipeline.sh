@@ -99,7 +99,7 @@ BES236_WT=/data/heqiang/labmember/Zhengjun/RNA_seq/BES236_WT_dedup_split.bam
 BES398_mut=/data/heqiang/labmember/Zhengjun/RNA_seq/BES398_mut_dedup_split.bam
 BES398_WT=/data/heqiang/labmember/Zhengjun/RNA_seq/BES398_WT_dedup_split.bam
 
-# 变异检测
+# SNP calling
 gatk --java-options -Xmx20G HaplotypeCaller \
      -R ${genome} \
      -I ${BES236_mut} \
@@ -108,12 +108,15 @@ gatk --java-options -Xmx20G HaplotypeCaller \
      -I ${BES398_WT} \
      --dont-use-soft-clipped-bases \
      -stand-call-conf 20.0 \
-     -O ${workdir}/RNA_seq.gatk.vcf
+     -O ${workdir}/RNA_seq.g.vcf
+
+# gvcf检测变异
+gatk GenotypeGVCFs -R ${genome} -V RNA_seq.g.vcf -O RNA_seq.vcf
 
 # 过滤低质量
 gatk VariantFiltration \
      -R ${genome} \
-     -V ${workdir}/RNA_seq.gatk.vcf \
+     -V ${workdir}/RNA_seq.vcf \
      -window 35 \
      -cluster 3 \
      --filter-expression "FS > 30.0" --filter-name "FS30.0" \
