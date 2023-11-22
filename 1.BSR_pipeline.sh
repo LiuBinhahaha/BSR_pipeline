@@ -109,6 +109,8 @@ gatk --java-options -Xmx20G HaplotypeCaller \
      --dont-use-soft-clipped-bases \
      -stand-call-conf 20.0 \
      -O ${workdir}/RNA_seq.gatk.vcf
+# --dont-use-soft-clipped-bases 忽略软剪切区域的碱基，有助于排除那些可能由于测序仪器误差或测序质量较低导致的不稳定的信息，提高变异调用的准确性
+# -stand-call-conf 20.0 设置最小的调用置信度(call confidence)
 
 # 过滤低质量
 gatk VariantFiltration \
