@@ -82,7 +82,7 @@ do
          --VALIDATION_STRINGENCY SILENT \
          -M ${workdir}/${i}_dedup.metrics
 
-    # MAPQ同步和reads剪切，这一步是RNA-seq特异性的一步。因为mRNA转录本是主要由DNA的外显子exon可变剪切组合而成
+    # MAPQ同步和reads剪切，处理cigar里含有n的reads,因为RNA和DNA比对软件的不同，在做下一步HaplotypeCaller的时候需要把内含子去除，这一步把cigar中含有N的reads做了剪切，默认参数下，重新计算了mapping quality
     gatk SplitNCigarReads \
          -R ${genome} \
          -I ${workdir}/${i}_dedup.bam \
@@ -99,7 +99,7 @@ BES236_WT=/data/heqiang/labmember/Zhengjun/RNA_seq/BES236_WT_dedup_split.bam
 BES398_mut=/data/heqiang/labmember/Zhengjun/RNA_seq/BES398_mut_dedup_split.bam
 BES398_WT=/data/heqiang/labmember/Zhengjun/RNA_seq/BES398_WT_dedup_split.bam
 
-# SNP calling
+# Variant calling
 gatk --java-options -Xmx20G HaplotypeCaller \
      -R ${genome} \
      -I ${BES236_mut} \
