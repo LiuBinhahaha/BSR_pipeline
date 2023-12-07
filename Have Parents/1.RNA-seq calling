@@ -137,3 +137,5 @@ gatk SelectVariants \
      -select-type INDEL \
      -V ${workdir}/RNA_seq.filter.vcf \
      -O ${workdir}/RNA_seq.filter.INDELs.vcf
+
+# snpEff
