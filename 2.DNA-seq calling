@@ -1,0 +1,132 @@
+#!/bin/bash
+workdir=/data/heqiang/labmember/Zhengjun/DNA_seq
+genome=/data/heqiang/labmember/Zhengjun/DNA_seq/genome/Zm-B73-REFERENCE-NAM-5.0.fa
+thread=30
+
+# fastp最高调用的线程数是16
+# bwa mem工具将测序数据比对到参考基因组上，-M指定bwa mem生成用于GATK的bam文件
+# fastp去除冗余和接头；bwa比对； samtools排序
+
+cd ${workdir}
+
+# 初始化shell
+eval "$(micromamba shell hook --shell=bash)"
+micromamba activate hq_base
+
+# mkdir ./json
+# mkdir ./html
+# mkdir ${workdir}/sort_bam
+# mkdir ${workdir}/q20_bam
+# mkdir ${workdir}/mkdup_bam
+
+# bwa index ${genome}
+# gatk CreateSequenceDictionary -R ${genome} -O ${workdir}/genome/Zm-B73-REFERENCE-NAM-5.0.dict
+# samtools faidx ${genome}
+
+sample_name=$(find *.fq.gz | awk -F '_' '{print $1}' | uniq)
+
+for i in ${sample_name};
+do
+    echo ${i}
+    # fastp去冗余和adapter
+    fastp -w ${thread} -i ${workdir}/${i}_R1.fq.gz -o ${workdir}/${i}_R1.clean.fq.gz -I ${workdir}/${i}_R2.fq.gz -O ${workdir}/${i}_R2.clean.fq.gz -j ${workdir}/json/${i}.json -h ${workdir}/${i}.html
+    
+    # bwa mem比对到参考基因组，samtools排序
+    bwa mem -M -t ${thread} -R "@RG\\tID:${i}\\tSM:${i}\\tPL:Illumina" ${genome} ${workdir}/${i}_R1.clean.fq.gz ${workdir}/${i}_R2.clean.fq.gz | samtools sort -@ ${thread} -m 2G -o ${workdir}/sort_bam/${i}_sort.bam
+
+    samtools index -@ ${thread} ${workdir}/sort_bam/${i}_sort.bam
+
+    # 过滤质量值小于20的reads
+    samtools view -@ ${thread} -q 20 -F 3332 -o ${workdir}/q20_bam/${i}.q20.bam ${workdir}/sort_bam/${i}_sort.bam
+
+    # gatk标记重复的reads
+    gatk MarkDuplicates -I ${workdir}/q20_bam/${i}.q20.bam -O ${workdir}/mkdup_bam/${i}_mkdup.bam -M ${workdir}/mkdup_bam/${i}_mardup.metrics.txt
+
+    samtools index ${workdir}/mkdup_bam/${i}_mkdup.bam
+
+done
+
+cd ${workdir}/mkdup_bam
+# first method:
+'''
+for i in ${sample_name};
+do
+    echo ${i}
+    gatk HaplotypeCaller --java-options "-Xmx40G" --native-pair-hmm-threads 30 -R /data/heqiang/labmember/Zhengjun/DNA_seq/genome/Zm-B73-REFERENCE-NAM-5.0.fa -ERC GVCF -I ${workdir}/mkdup_bam/"${i}_mkdup.bam" -O ${workdir}/"${i}.g.vcf"
+done
+'''
+
+# second method:
+# sample_name是一个数组
+# {}表示占位符
+sample_name=($(find *.bam | awk -F '_' '{print $1}'));
+parallel --joblog ${workdir}/mkdup_bam/gvcferror.log -j 20 'echo {} && gatk HaplotypeCaller --java-options "-Xmx40G" --native-pair-hm-threads 30 -R /data/heqiang/labmember/Zhengjun/DNA_seq/genome/Zm-B73-REFERENCE-NAM-5.0.fa -ERC GVCF -I ${workdir}/mkdup_bam/"{}_mkdup.bam" -O ${workdir}/mkdup_bam/"{}.g.vcf"' ::: "${sample_name[@]}"
+# 使用parallel批量执行时，参考基因组必须使用全路径，不可使用${workdir}
+
+# 流程：对于多样本DNA测序数据如果使用GVCF工作流程，则必须包含：GVCF, combineGVCF, GenotypeGVCFs  三者缺一不可，再执行后面的过滤
+# --emit-ref-confidence==-ERC,只有当设置了这个参数后输出的文件才是g.vcf,而不是命名成g.vcf就是g.vcf文件
+# 对于样本量少且数据量小的多个样本，可直接全call：gatk HaplotypeCaller --java-options "-Xmx40G" -R Zm-B73-REFERENCE-NAM-5.0.fa -I sample1.markdup.bam -I sample2.markdup.bam -I sample3.markdup.bam -O DNA.gatk.vcf
+# 对于多样本的haplotypecaller，可同时进行多个单样本的call，后使用combineGVCFs合并，提升效率，单样本call时要加 --emit-ref-confidence GVCF 形成中间文件gvcf。
+
+# method1: 直接combineGVCFs，这样的话适用于样本量少的情况，速度慢
+gatk --java-options "-Xmx100G" CombineGVCFs -R ${genome} \
+--variant B73.g.vcf \
+--variant BES236.g.vcf \
+--variant BES398.g.vcf \
+--variant Zh58_15X.g.vcf \
+-O DNA.combined.g.vcf
+nohup gatk --java-options "-Xmx100G" CombineGVCFs -R /data/heqiang/labmember/Zhengjun/DNA_seq/genome/Zm-B73-REFERENCE-NAM-5.0.fa --variant ./mkdup_bam/B73.g.vcf --variant ./mkdup_bam/BES236.g.vcf --variant ./mkdup_bam/BES398.g.vcf --variant ./Zh58_15X.g.vcf -O DNA.combined.g.vcf 
+
+# 通过gvcf检测变异, -V 添加上步得到的gvcf
+# The GATK4 GenotypeGVCFs tool can take only one input track. Options are 1) a single single-sample GVCF 2) a single multi-sample GVCF created by CombineGVCFs or 3) a GenomicsDB workspace created by GenomicsDBImport. A sample-level GVCF is produced by HaplotypeCaller with the `-ERC GVCF` setting.
+gatk GenotypeGVCFs -R ${genome} -V DNA.combined.g.vcf -O DNA_combined.vcf
+
+# method2: GenomicsDBImport,分染色体做，最后合并，速度快，对于大量样本推荐使用这种。我测试过发现method1和method2在时间上相差将近10倍
+# GenomicsDBImport生成每条染色体的数据库
+gatk GenomicsDBImport \
+    -V /data/heqiang/labmember/Zhengjun/DNA_seq/mkdup_bam/B73.g.vcf \
+    -V /data/heqiang/labmember/Zhengjun/DNA_seq/mkdup_bam/BES236.g.vcf \
+    -V /data/heqiang/labmember/Zhengjun/DNA_seq/mkdup_bam/BES398.g.vcf \
+    -V /data/heqiang/labmember/Zhengjun/DNA_seq/Zh58_15X.g.vcf \
+    --genomicsdb-workspace-path /data/heqiang/labmember/Zhengjun/DNA_seq/database_chrx
+    -L chrx
+
+order=(1 2 3 4 5 6 7 8 9 10)
+parallel --joblog ./genomicsdb.log -j 10 'echo {} && gatk GenomicsDBImport -V ./B73.g.vcf -V ./BES236.g.vcf -V ./BES398.g.vcf -V Zh58_15X.g.vcf --genomicsdb-workspace-path "database_chr"{} -L "chr"{}' ::: "${order[@]}"
+# 运行时写为sh脚本，nohup后台运行
+
+
+gatk GenotypeGVCFs -R /data/heqiang/labmember/Zhengjun/DNA_seq/genome/Zm-B73-REFERENCE-NAM-5.0.fa -V gendb://database_chr1 -O DNA_chr1.vcf
+
+order=(1 2 3 4 5 6 7 8 9 10)
+parallel --joblog ./genotype.log -j 10 'echo {} && gatk GenotypeGVCFs -R /data/heqiang/labmember/Zhengjun/DNA_seq/genome/Zm-B73-REFERENCE-NAM-5.0.fa -V "gendb://database_chr"{} -O "DNA_chr"{}.vcf' ::: "${order[@]}"
+
+
+gatk MergeVcfs \
+    -I DNA_chr1.vcf \
+    -I DNA_chr2.vcf \
+    -I DNA_chr3.vcf \
+    -I DNA_chr4.vcf \
+    -I DNA_chr5.vcf \
+    -I DNA_chr6.vcf \
+    -I DNA_chr7.vcf \
+    -I DNA_chr8.vcf \
+    -I DNA_chr9.vcf \
+    -I DNA_chr10.vcf \
+-O DNA_seq.vcf
+
+gatk SelectVariants -select-type SNP -V DNA_combined.vcf -O DNA.snp.vcf.gz
+
+# hard filter
+gatk VariantFiltration -V DNA_seq.snp.vcf \
+--filter-expression "QD < 2.0" --filter-name "LowQD" \
+--filter-expression "MQ < 40.0" --filter-name "MQ40.0" \
+--filter-expression "FS > 60.0" --filter-name "FS60.0" \
+--filter-expression "SOR > 3.0" --filter-name "SOR3.0" \
+--filter-expression "MQRankSum < -12.5" --filter-name "MQRankSum-12.5" \
+--filter-expression "ReadPosRankSum < -8.0" --filter-name "ReadPosRankSum-8.0" \
+-O DNA_seq.filter.snp.vcf &
+
+nohup gatk VariantFiltration -V DNA_seq.snp.vcf --filter-expression "QD < 2.0" --filter-name "LowQD" --filter-expression "MQ < 40.0" --filter-name "MQ40.0" --filter-expression "FS > 60.0" --filter-name "FS60.0" --filter-expression "SOR > 3.0" --filter-name "SOR3.0" --filter-expression "MQRankSum < -12.5" --filter-name "MQRankSum-12.5" --filter-expression "ReadPosRankSum < -8.0" --filter-name "ReadPosRankSum-8.0" -O DNA_seq.filter.snp.vcf &
+
+
