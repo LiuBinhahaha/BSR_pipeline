@@ -129,4 +129,4 @@ gatk VariantFiltration -V DNA_seq.snp.vcf \
 
 nohup gatk VariantFiltration -V DNA_seq.snp.vcf --filter-expression "QD < 2.0" --filter-name "LowQD" --filter-expression "MQ < 40.0" --filter-name "MQ40.0" --filter-expression "FS > 60.0" --filter-name "FS60.0" --filter-expression "SOR > 3.0" --filter-name "SOR3.0" --filter-expression "MQRankSum < -12.5" --filter-name "MQRankSum-12.5" --filter-expression "ReadPosRankSum < -8.0" --filter-name "ReadPosRankSum-8.0" -O DNA_seq.filter.snp.vcf &
 
-
+# snpEff
