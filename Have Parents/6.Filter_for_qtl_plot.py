@@ -27,6 +27,7 @@ file.close()
 out.close()
 
 # QTL-seq: qtlplot
+# install: conda/micromamba install -c bioconda qtlseq
 # nohup qtlplot --vcf ./BES236_filter_qtlplot.vcf --out ./BES236 --N-bulk1 50 --N-bulk2 50 -F 2 -w 1000 -s 100 --min-depth 4 --max-depth 100 --N-rep 10000 --min-SNPindex 0.3 &
 # nohup qtlplot --vcf ./BES398_filter_qtlplot.vcf --out ./BES398 --N-bulk1 50 --N-bulk2 50 -F 2 -w 1000 -s 100 --min-depth 4 --max-depth 100 --N-rep 10000 --min-SNPindex 0.3 &
 
