@@ -6,7 +6,7 @@ out = open("/data/heqiang/labmember/Zhengjun/BSR_dna_rna/BES398_filter_qtlplot.v
 
 out.write("##fileformat=VCFv4.2" + '\n')
 
-# 一定注意亲本的表型要跟后面第一个子代的表型保持一致，这与后续我们想要使用qtlplot进行snp-index分析时有关。
+# 一定注意亲本的表型要与后面第一个子代的表型保持一致，这与后续我们想要使用qtlplot进行snp-index分析时有关。
 # 仅需提取出BES236(不抗)、BES236_mut(不抗)、BES236_WT(抗)
 
 # 仅需提取出BES398(不抗)、BES398_mut(不抗)、BES398_WT(抗)
