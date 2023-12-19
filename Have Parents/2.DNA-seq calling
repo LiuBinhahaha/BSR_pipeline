@@ -132,5 +132,3 @@ nohup gatk VariantFiltration -V DNA_seq.snp.vcf --filter-expression "QD < 2.0" -
 
 # snpEff
 
-# soft filter
-vcftools --vcf ./DNA_seq_ann.filter.snp.vcf --maf 0.05 --recode --recode-INFO-all --out ./DNA_seq_ann_filtermaf0.05.filter.snp.vcf
