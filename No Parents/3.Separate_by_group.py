@@ -1,7 +1,8 @@
 # 按照技术路线将RNA-seqvcf文件拆分
 file = open("/data/heqiang/labmember/Zhengjun/BSR_RNA/RNA_seq.filter_ann.SNPs.vcf", 'r')
-out = open("/data/heqiang/labmember/Zhengjun/BSR_RNA/BES236_RNA.vcf", 'w')
-# out = open("/data/heqiang/labmember/Zhengjun/BSR_RNA/BES398_RNA.vcf", 'w')
+out = open("/data/heqiang/labmember/Zhengjun/BSR_RNA/BES236_RNA.txt", 'w')
+# out = open("/data/heqiang/labmember/Zhengjun/BSR_RNA/BES398_RNA.txt", 'w')
+
 for line in file:
     if line.startswith("#"):
         if line.startswith("#CHROM"):
