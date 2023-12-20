@@ -30,6 +30,7 @@ mut <- dd %>% select("mut") %>% separate(mut, c("mut.geno", "mut.depth"), sep=":
 raw <- cbind(dd, wt, mut) %>% as.tibble()  # tidyverse中的as.tibble作用是转换数据框的格式
 
 gt_group_type <- raw %>% group_by(WT.geno, mut.geno) %>% count()  # 查看ref和alt各种基因型组合及数目
+write_tsv(file="genotype_group.tsv", x=gt_group_type)
 
 raw <- raw %>% mutate(WT.sum = WT.ref.depth + WT.alt.depth, mut.sum = mut.ref.depth + mut.alt.depth)
 
