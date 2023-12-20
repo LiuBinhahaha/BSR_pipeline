@@ -79,7 +79,7 @@ raw <- raw %>% mutate(WT.index = WT.alt.depth/(WT.ref.depth + WT.alt.depth),
                                               mut.index = mut.alt.depth/(mut.ref.depth + mut.alt.depth),
                                               delta.index = WT.index - mut.index)
 
-# 设定滑窗
+# 设定滑窗(窗口大小一般用1~2Mb，step为10%的窗口)
 slid_win <- winScan(x = raw,
                     groups = "CHROM",
                     position = "POS",
