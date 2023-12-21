@@ -1,8 +1,8 @@
 # 分别对BES236.vcf和BES398.vcf两个文件进行过滤
 # 这个脚本过滤后的数据还可用于最终位点的提取
 import re
-file = open("/data/heqiang/labmember/Zhengjun/BSR_dna_rna/BES398.vcf", 'r')
-out = open("/data/heqiang/labmember/Zhengjun/BSR_dna_rna/BES398_filter.vcf", 'w')
+file = open("/data/heqiang/labmember/Zhengjun/BSR_DNA_RNA/BES398.vcf", 'r')
+out = open("/data/heqiang/labmember/Zhengjun/BSR_DNA_RNA/BES398_filter.vcf", 'w')
 
 out.write("##fileformat=VCFv4.2" + '\n')  # vcf文件的头格式
 # 过滤标准
