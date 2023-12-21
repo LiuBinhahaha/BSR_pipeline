@@ -39,7 +39,7 @@ do
     # 过滤质量值小于20的reads
     samtools view -@ ${thread} -q 20 -F 3332 -o ${workdir}/q20_bam/${i}.q20.bam ${workdir}/sort_bam/${i}_sort.bam
 
-    # gatk标记重复的reads
+    # gatk标记PCR重复的reads
     gatk MarkDuplicates -I ${workdir}/q20_bam/${i}.q20.bam -O ${workdir}/mkdup_bam/${i}_mkdup.bam -M ${workdir}/mkdup_bam/${i}_mardup.metrics.txt
 
     samtools index ${workdir}/mkdup_bam/${i}_mkdup.bam
