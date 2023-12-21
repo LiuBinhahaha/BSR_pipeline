@@ -1,3 +1,5 @@
+# 这个脚本已被弃用，只留做学习如何grep过滤。弃用的原因是因为上一步注释后的文件中在INFO列中含有1/1或0/0等，这样会导致过滤错误。
+
 #过滤
 #去除缺失位点(./.)的行; 去除野生和突变同时包含(1/1)和(0/0)的行，1/1.*1/1表示去除同时包含两个1/1的行，他们之间可以有任何字符，包含零个字符; 将#CHROM替换为CHROM.
 grep -v '##' SWL6_snpeff.filter.SNPs.vcf | grep -v '\./\.' | grep -v '0/0.*0/0' | grep -v '1/1.*1/1'| sed s'/^#CHROM/CHROM/' | sed s'/2_WT/WT/' | sed s'/2_mut/mut/' > SWL6_snpeff.filter.SNPs.txt
