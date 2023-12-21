@@ -8,7 +8,7 @@ library(RColorBrewer)
 #install_github('tavareshugo/windowscanr')
 library(windowscanr)
 
-setwd("/data/heqiang/labmember/Zhengjun/BSR_dna_rna")
+setwd("/data/heqiang/labmember/Zhengjun/BSR_DNA_RNA")
 
 # BES236
 # BES398
@@ -38,7 +38,7 @@ df_tmp4 <- df_tmp3 %>% filter(!(BES398_WT.gt == '0/0' & BES398_mut.gt == '0/0'))
 '''
 
 # 添加reads数sum
-df_tmp5 <- df_tmp4 %>% mutate(AD_REF.BES398_WT = as.numeric(AD_REF.BES398_WT),
+df_tmp5 <- df_tmp3 %>% mutate(AD_REF.BES398_WT = as.numeric(AD_REF.BES398_WT),
                               AD_ALT.BES398_WT = as.numeric(AD_ALT.BES398_WT),
                               AD_REF.BES398_mut = as.numeric(AD_REF.BES398_mut),
                               AD_ALT.BES398_mut = as.numeric(AD_ALT.BES398_mut),
@@ -46,7 +46,7 @@ df_tmp5 <- df_tmp4 %>% mutate(AD_REF.BES398_WT = as.numeric(AD_REF.BES398_WT),
                               BES398_mut.sum = AD_REF.BES398_mut + AD_ALT.BES398_mut)
 
 # reads密度图
-pdf("/data/heqiang/labmember/Zhengjun/BSR_dna_rna/BES398/BES398_reads_desity.pdf", height = 3, width = 6)
+pdf("/data/heqiang/labmember/Zhengjun/BSR_DNA_RNA/BES398/BES398_reads_desity.pdf", height = 3, width = 6)
 par(mfrow = c(1, 2))
 plot(density(df_tmp5$BES398_WT.sum, width = 1), main = "BES398_WT", xlim = c(0, 100))
 plot(density(df_tmp5$BES398_mut.sum, width = 1), main = "BES398_mut", xlim = c(0, 100))
@@ -54,7 +54,7 @@ dev.off()
 
 # 统计两池的gene type
 gene_type_BES398 <- df_tmp5 %>% group_by(BES398_WT.gt, BES398_mut.gt) %>% count()
-write.table(gene_type_BES398, file = "/data/heqiang/labmember/Zhengjun/BSR_dna_rna/BES398/BES398_gene_type.tsv", row.names = F, quote = F)
+write.table(gene_type_BES398, file = "/data/heqiang/labmember/Zhengjun/BSR_DNA_RNA/BES398/BES398_gene_type.tsv", row.names = F, quote = F)
 
 # SNP_distribution_fig
 options(scipen = 200)  # 在 R 中，默认情况下，当浮点数的小数部分为零时，它们将以科学计数法的形式显示。scipen 的默认值是 0，这意味着浮点数小数部分为零时将采用科学计数法。例如，0.0001 将显示为 1e-04，如果将 scipen 设置为较大的值，比如 200，那么 R 将更不容易采用科学计数法显示浮点数，即使小数部分为零，也会以普通的小数形式显示。
@@ -72,6 +72,6 @@ Phist <- chromColor %>% left_join(df_tmp5, by = "CHROM") %>% ggplot(aes(x = POS)
         strip.background = element_rect(color = NA, fill = NA)) +
   facet_grid(LABEL ~ .)
 Phist
-ggsave(Phist, filename = "/data/heqiang/labmember/Zhengjun/BSR_dna_rna/BES398/BES398_SNP_distribution_histogram.pdf", width = 9, height = dim(chromColor)[[1]] * 0.6 + 0.5)
+ggsave(Phist, filename = "/data/heqiang/labmember/Zhengjun/BSR_DNA_RNA/BES398/BES398_SNP_distribution_histogram.pdf", width = 9, height = dim(chromColor)[[1]] * 0.6 + 0.5)
 
 
