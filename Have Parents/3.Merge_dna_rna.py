@@ -3,9 +3,9 @@ import re
 import os
 # ['#CHROM', 'POS', 'ID', 'REF', 'ALT', 'QUAL', 'FILTER', 'INFO', 'FORMAT', 'B73', 'BES236', 'BES398', 'Zh58']
 
-file_dna = open("/data/heqiang/labmember/Zhengjun/BSR_dna_rna/DNA_seq_ann.filter.snp.vcf", 'r')
-file_rna = open("/data/heqiang/labmember/Zhengjun/BSR_dna_rna/RNA_seq.filter_ann.SNPs.vcf", 'r')
-out = open("/data/heqiang/labmember/Zhengjun/BSR_dna_rna/merged_dna_rna.vcf", 'w')
+file_dna = open("/data/heqiang/labmember/Zhengjun/BSR_DNA_RNA/DNA_seq_ann.filter.snp.vcf", 'r')
+file_rna = open("/data/heqiang/labmember/Zhengjun/BSR_DNA_RNA/RNA_seq.filter_ann.SNPs.vcf", 'r')
+out = open("/data/heqiang/labmember/Zhengjun/BSR_DNA_RNA/merged_dna_rna.vcf", 'w')
 
 dna = {}
 
