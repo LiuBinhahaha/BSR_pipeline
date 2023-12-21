@@ -1,7 +1,7 @@
 # 将上一步取交集后的vcf文件分成BES236和BES398两个vcf文件，用于后续的分析
 import re
-file = open("/data/heqiang/labmember/Zhengjun/BSR_dna_rna/merged_dna_rna.vcf", 'r')
-out = open("/data/heqiang/labmember/Zhengjun/BSR_dna_rna/BES398.vcf", 'w')
+file = open("/data/heqiang/labmember/Zhengjun/BSR_DNA_RNA/merged_dna_rna.vcf", 'r')
+out = open("/data/heqiang/labmember/Zhengjun/BSR_DNA_RNA/BES398.vcf", 'w')
 
 out.write("##fileformat=VCFv4.2" + '\n')
 # BES236: 9 10 12 13 14
