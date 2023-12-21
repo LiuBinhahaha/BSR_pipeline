@@ -1,8 +1,8 @@
 # 按QTL-seq软件的输入格式提取，没有做任何过滤
 # QTL-seq计算SNP-index，在有父母本的情况下
 
-file = open("/data/heqiang/labmember/Zhengjun/BSR_dna_rna/BES398_filter.vcf", 'r')
-out = open("/data/heqiang/labmember/Zhengjun/BSR_dna_rna/BES398_filter_qtlplot.vcf", 'w')
+file = open("/data/heqiang/labmember/Zhengjun/BSR_DNA_RNA/BES398_filter.vcf", 'r')
+out = open("/data/heqiang/labmember/Zhengjun/BSR_DNA_RNA/BES398_filter_qtlplot.vcf", 'w')
 
 out.write("##fileformat=VCFv4.2" + '\n')
 
