@@ -113,7 +113,7 @@ gatk MergeVcfs \
     -I DNA_chr8.vcf \
     -I DNA_chr9.vcf \
     -I DNA_chr10.vcf \
--O DNA_seq.vcf
+-O DNA_combined.vcf
 
 # select SNP
 gatk SelectVariants -select-type SNP -V DNA_combined.vcf -O DNA.snp.vcf.gz
