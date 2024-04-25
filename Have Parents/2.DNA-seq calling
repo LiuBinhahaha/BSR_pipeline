@@ -59,7 +59,7 @@ done
 # second method:
 # sample_name是一个数组
 # {}表示占位符
-sample_name=($(find *.bam | awk -F '_' '{print $1}'));
+sample_name=$(find *.bam | awk -F '_' '{print $1}');
 parallel --joblog ${workdir}/mkdup_bam/gvcferror.log -j 20 'echo {} && gatk HaplotypeCaller --java-options "-Xmx40G" --native-pair-hm-threads 30 -R /data/heqiang/labmember/Zhengjun/DNA_seq/genome/Zm-B73-REFERENCE-NAM-5.0.fa -ERC GVCF -I ${workdir}/mkdup_bam/"{}_mkdup.bam" -O ${workdir}/mkdup_bam/"{}.g.vcf"' ::: "${sample_name[@]}"
 # 使用parallel批量执行时，参考基因组必须使用全路径，不可使用${workdir}
 
